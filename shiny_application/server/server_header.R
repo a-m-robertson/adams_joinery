@@ -31,6 +31,58 @@ shiny::observeEvent(input$in_header_button_new_job, {
   
 })
 
+# update database
+shiny::observeEvent(input$in_header_button_update_database, {
+  
+  # loading screen
+  shinyjs::show("div_ui_global_loading_screen")
+  
+  fc_log(
+    message = "update database shiny::observeEvent: input$in_header_button_update_database",
+    script = "server_header.R"
+  )
+  
+  tryCatch(
+    {
+      
+      # update database
+      fc_database_to(
+        dt_jobs = rv$dt_jobs
+      )
+      
+      # notify user
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = "Update Database",
+        text = "Complete!",
+        type = "info"
+      )
+      
+    },
+    error = function(cond) {
+      
+      # log error message
+      fc_log(
+        message = paste0("error: ", cond),
+        script = "server_header.R"
+      )
+      
+      # notify user
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = "Update Database",
+        text = paste0("Database update failed: ", cond),
+        type = "warning"
+      )
+      
+    }
+  )
+
+  # loading screen
+  shinyjs::hide("div_ui_global_loading_screen")
+  
+})
+
 # ----------------------------------------------------------------------------------------- render ui ----
 
 

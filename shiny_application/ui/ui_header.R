@@ -21,19 +21,27 @@ ui_header <- shiny::fluidPage(
     ),
     
     shiny::column(
-      width = 3,
-      offset = 5,
+      width = 2,
+      offset = 6,
       
       shiny::wellPanel(
         
         shiny::fluidRow(
           
           shiny::column(
-            width = 3,
+            width = 6,
             align = "center",
             shiny::actionLink(
               inputId = "in_header_button_new_job",
               label = HTML("<img class= 'animatedImage' src='./icons/icon_new_job.png' height='40' width='40' data-toggle='popover' title='Create New Job'/>")
+            )
+          ),
+          shiny::column(
+            width = 6,
+            align = "center",
+            shiny::actionLink(
+              inputId = "in_header_button_update_database",
+              label = HTML("<img class= 'animatedImage' src='./icons/icon_update_database.png' height='40' width='40' data-toggle='popover' title='Update Database'/>")
             )
           )
           

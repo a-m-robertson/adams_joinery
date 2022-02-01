@@ -65,3 +65,18 @@ fc_json_from <- function(
   return(output)
   
 }
+
+# ----------------------------------------------------------------------------------------- fc_json_validate ----
+
+fc_json_validate <- function(
+  input
+) {
+  
+  # if length of input is greater than 1 then it is not a json string
+  if (length(input) > 1) {return(FALSE)}
+  # if item is not text then it is not a json string
+  if (!is.character(input)) {return(FALSE)}
+  
+  return(jsonlite::validate(input))
+  
+}

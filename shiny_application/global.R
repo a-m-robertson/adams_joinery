@@ -52,6 +52,15 @@ source(
   encoding = var_global_encoding_type
 )
 
+fc_log(
+  message = "sourcing file: global/database_functions.R",
+  script = "global.R"
+)
+source(
+  file = "global/database_functions.R",
+  encoding = var_global_encoding_type
+)
+
 # ----------------------------------------------------------------------------------------- global settings ----
 
 # httr settings
