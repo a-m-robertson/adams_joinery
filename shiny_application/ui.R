@@ -193,25 +193,25 @@ shiny::tagList(
     
     # tabset
     shiny::div(
-      
+
       id = "div_ui_global_body",
       class = "simpleDiv",
-      
+
       shiny::tabsetPanel(
-        
+
         id = "in_ui_global_body_navbar",
-        
+
         # overview
         shiny::tabPanel(
-          
+
           title = "Overview",
-          
+
           shiny::div(
             id = "div_ui_global_body_overview",
             class = "simpleDiv",
             ui_body_overview
           )
-          
+
         ),
         
         # mill
@@ -226,87 +226,22 @@ shiny::tagList(
           )
           
         ),
-        
-        # programming
-        shiny::tabPanel(
-          
-          title = "Programming",
-          
-          shiny::div(
-            id = "div_ui_global_body_programming",
-            class = "simpleDiv",
-            ui_body_programming
-          )
-          
-        ),
-        
-        # cnc
-        shiny::tabPanel(
-          
-          title = "CNC",
-          
-          shiny::div(
-            id = "div_ui_global_body_cnc",
-            class = "simpleDiv",
-            ui_body_cnc
-          )
-          
-        ),
-        
-        # veneer
-        # shiny::tabPanel(
-        #   
-        #   title = "Veneer"#,
-        #   
-        #   # shiny::div(
-        #   #   id = "div_ui_global_body_veneer",
-        #   #   class = "simpleDiv",
-        #   #   ui_body_veneer
-        #   # )
-        #   
-        # ),
-        # 
-        # # bench
-        # shiny::tabPanel(
-        #   
-        #   title = "Bench",
-        #   
-        #   # shiny::div(
-        #   #   id = "div_ui_global_body_bench",
-        #   #   class = "simpleDiv",
-        #   #   ui_body_bench
-        #   # )
-        #   
-        # ),
-        # 
-        # # spray
-        # shiny::tabPanel(
-        #   
-        #   title = "Spray",
-        #   
-        #   # shiny::div(
-        #   #   id = "div_ui_global_body_spray",
-        #   #   class = "simpleDiv",
-        #   #   ui_body_spray
-        #   # )
-        #   
-        # ),
-        
+
         # admin
         shiny::tabPanel(
-          
+
           title = "Admin",
-          
+
           shiny::div(
             id = "div_ui_global_body_admin",
             class = "simpleDiv",
             ui_body_admin
           )
-          
+
         )
-        
+
       )
-      
+
     )
     
   )

@@ -54,6 +54,26 @@ shiny::shinyServer(
       encoding = var_global_encoding_type
     )
     
+    fc_log(
+      message = "sourcing file: server/server_body_overview.R",
+      script = "server.R"
+    )
+    source(
+      file = "server/server_body_overview.R",
+      local = TRUE,
+      encoding = var_global_encoding_type
+    )
+    
+    fc_log(
+      message = "sourcing file: server/server_body_mill.R",
+      script = "server.R"
+    )
+    source(
+      file = "server/server_body_mill.R",
+      local = TRUE,
+      encoding = var_global_encoding_type
+    )
+
     # when server is finished running we close the loading screen
     shinyjs::hide("div_ui_global_init_loading_screen")
     

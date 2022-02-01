@@ -12,25 +12,75 @@
 # ----------------------------------------------------------------------------------------- reactives ----
 
 rv_new_job <- shiny::reactiveValues(
-  # dt_quotes
   # modal_active
 )
 
 # ----------------------------------------------------------------------------------------- modal ----
 
 # launch modal
-fc_new_job_modal_launch <- function() {
+fc_new_job_modal_launch <- function(
+  dt_jobs = NULL
+) {
+  
+  # if provided dt_jobs will be a single row
   
   # log that modal is shown
   rv_new_job$modal_active <- TRUE
   
+  # log job id
+  rv_new_job$job_id <- dt_jobs$job_id
+  
   # show modal
-  shiny::showModal(fc_new_job_modal())
+  shiny::showModal(fc_new_job_modal(
+    dt_jobs = dt_jobs
+  ))
   
 }
 
 # define modal
-fc_new_job_modal <- function() {
+fc_new_job_modal <- function(
+  dt_jobs = NULL
+) {
+  
+  # if provided dt_jobs will be a single row
+  
+  # modal title
+  if (is.null(dt_jobs)) {model_title <- "Create New Job"}
+  if (!is.null(dt_jobs)) {model_title <- paste0("Update Job ", dt_jobs$job_id)}
+  
+  # default values
+  in_new_job_text_customer <- ""
+  in_new_job_text_site <- ""
+  in_new_job_text_cs_number <- ""
+  in_new_job_text_dwg_number <- ""
+  in_new_job_date_required_by <- Sys.Date() + 28
+  in_new_job_numeric_hours_mill <- 0
+  in_new_job_numeric_hours_programming <- 0
+  in_new_job_numeric_hours_cnc <- 0
+  in_new_job_numeric_hours_veneer <- 0
+  in_new_job_numeric_hours_bench <- 0
+  in_new_job_numeric_hours_spray <- 0
+  
+  # capture inputs
+  if (!is.null(dt_jobs)) {
+    
+    in_new_job_text_customer <- dt_jobs$customer
+    in_new_job_text_site <- dt_jobs$site
+    in_new_job_text_cs_number <- dt_jobs$cs_number
+    in_new_job_text_dwg_number <- dt_jobs$dwg_number
+    in_new_job_date_required_by <- dt_jobs$required_by
+    in_new_job_numeric_hours_mill <- dt_jobs$hours_mill
+    in_new_job_numeric_hours_programming <- dt_jobs$hours_programming
+    in_new_job_numeric_hours_cnc <- dt_jobs$hours_cnc
+    in_new_job_numeric_hours_veneer <- dt_jobs$hours_veneer
+    in_new_job_numeric_hours_bench <- dt_jobs$hours_bench
+    in_new_job_numeric_hours_spray <- dt_jobs$hours_spray
+    
+  }
+  
+  # continue button
+  if (is.null(dt_jobs)) {continue_button_label <- "Create Job"}
+  if (!is.null(dt_jobs)) {continue_button_label <- "Update Job"}
   
   return(
     shiny::modalDialog(
@@ -44,7 +94,7 @@ fc_new_job_modal <- function() {
         shiny::column(
           width = 6,
           
-          h4("Create New Job")
+          h4(model_title)
           
         ),
         
@@ -75,7 +125,8 @@ fc_new_job_modal <- function() {
           
           shiny::textInput(
             inputId = "in_new_job_text_customer",
-            label = h5("Customer")
+            label = h5("Customer"),
+            value = in_new_job_text_customer
           )
           
         ),
@@ -85,7 +136,8 @@ fc_new_job_modal <- function() {
           
           shiny::textInput(
             inputId = "in_new_job_text_site",
-            label = h5("Site")
+            label = h5("Site"),
+            value = in_new_job_text_site
           )
           
         )
@@ -98,7 +150,8 @@ fc_new_job_modal <- function() {
           
           shiny::textInput(
             inputId = "in_new_job_text_cs_number",
-            label = h5("C/S Number")
+            label = h5("C/S Number"),
+            value = in_new_job_text_cs_number
           )
           
         ),
@@ -108,7 +161,8 @@ fc_new_job_modal <- function() {
           
           shiny::textInput(
             inputId = "in_new_job_text_dwg_number",
-            label = h5("DWG Number")
+            label = h5("DWG Number"),
+            value = in_new_job_text_dwg_number
           )
           
         )
@@ -122,7 +176,7 @@ fc_new_job_modal <- function() {
           shiny::dateInput(
             inputId = "in_new_job_date_required_by",
             label = h5("Required By"),
-            value = Sys.Date() + 28
+            value = in_new_job_date_required_by
           )
           
         )
@@ -142,7 +196,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_mill",
             label = h5("Mill Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_mill
           )
           
         ),
@@ -153,7 +207,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_programming",
             label = h5("Programming Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_programming
           )
           
         ),
@@ -164,7 +218,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_cnc",
             label = h5("CNC Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_cnc
           )
           
         )
@@ -179,7 +233,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_veneer",
             label = h5("Veneer Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_veneer
           )
           
         ),
@@ -190,7 +244,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_bench",
             label = h5("Bench Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_bench
           )
           
         ),
@@ -201,7 +255,7 @@ fc_new_job_modal <- function() {
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_spray",
             label = h5("Spray Hours"),
-            value = 0
+            value = in_new_job_numeric_hours_spray
           )
           
         )
@@ -223,7 +277,7 @@ fc_new_job_modal <- function() {
           
           shinyBS::bsButton(
             inputId = "in_new_job_button_continue",
-            label = "Create Job",
+            label = continue_button_label,
             style = "primary"
           )
           
@@ -248,19 +302,62 @@ shiny::observeEvent(input$in_new_job_button_close, {
   
 })
 
-# load quote
+# create job
 shiny::observeEvent(input$in_new_job_button_continue, {
   
   # loading screen
   shinyjs::show("div_ui_global_loading_screen")
   
   fc_log(
-    message = "load quote shiny::observeEvent: input$in_existing_button_load",
-    script = "server_existing.R"
+    message = "create job shiny::observeEvent: input$in_new_job_button_continue",
+    script = "server_new_job.R"
   )
   
+  # static copies
+  dt_jobs <- data.table::copy(rv$dt_jobs)
+  
+  # create new job id if required
+  if (is.null(rv_new_job$job_id)) {job_id_new <- max(dt_jobs$job_id, 0) + 1}
+  if (!is.null(rv_new_job$job_id)) {job_id_new <- rv_new_job$job_id}
+  
+  # create new row in dt_jobs
+  dt_jobs_new <- data.table::data.table(
+    job_id = job_id_new,
+    
+    customer = as.character(input$in_new_job_text_customer),
+    site = as.character(input$in_new_job_text_site),
+    cs_number = as.character(input$in_new_job_text_cs_number),
+    dwg_number = as.character(input$in_new_job_text_dwg_number),
+    required_by = as.Date(input$in_new_job_date_required_by),
+    hours_mill = as.numeric(input$in_new_job_numeric_hours_mill),
+    hours_programming = as.numeric(input$in_new_job_numeric_hours_programming),
+    hours_cnc = as.numeric(input$in_new_job_numeric_hours_cnc),
+    hours_veneer = as.numeric(input$in_new_job_numeric_hours_veneer),
+    hours_bench = as.numeric(input$in_new_job_numeric_hours_bench),
+    hours_spray = as.numeric(input$in_new_job_numeric_hours_spray),
+    
+    active = 1,
+    created_by = as.character(rv$user),
+    created_on = Sys.time(),
+    updated_by = as.character(rv$user),
+    updated_on = Sys.time()
+  )
+  
+  # deactivate old row
+  if (!is.null(rv_new_job$job_id)) {dt_jobs[job_id == rv_new_job$job_id, active := 0]}
+  
+  # add new row to dt_jobs
+  dt_jobs <- rbind(
+    dt_jobs,
+    dt_jobs_new,
+    fill = TRUE
+  )
+  
+  # update rv
+  rv$dt_jobs <- data.table::copy(dt_jobs)
+  
   # clear reactive
-  rv_existing <- NULL
+  rv_new_job <- NULL
   
   shiny::removeModal(session) 
   
@@ -278,6 +375,7 @@ output$out_new_job_hours_total <- shiny::renderUI({
   
   return(
     HTML(paste0(
+      "<h5>",
       "Total Hours: ",
       sum(
         input$in_new_job_numeric_hours_mill,
@@ -287,7 +385,8 @@ output$out_new_job_hours_total <- shiny::renderUI({
         input$in_new_job_numeric_hours_bench,
         input$in_new_job_numeric_hours_spray,
         na.rm = TRUE
-      )
+      ),
+      "</h5>"
     ))
   )
   

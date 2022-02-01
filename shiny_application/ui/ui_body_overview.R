@@ -41,7 +41,28 @@ ui_body_overview <- shiny::fluidPage(
       
       DT::dataTableOutput(
         outputId = "out_body_overview_table_jobs"
-      )
+      ),
+      
+      br(),
+      
+      shiny::div(
+        id = "div_body_overview_selected_job",
+        class = "simpleDiv",
+       
+        shinyBS::bsButton(
+          inputId = "in_body_overview_button_update_job",
+          label = "Update Job",
+          style = "primary"
+        ),
+        
+        hr(),
+        
+        shiny::plotOutput(
+          outputId = "out_body_overview_plot_gantt_job",
+          height = "600px"
+        )
+         
+      ) %>% shinyjs::hidden()
       
     )
     
