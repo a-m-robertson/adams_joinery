@@ -32,7 +32,7 @@ shiny::observeEvent(input$in_body_overview_button_update_job, {
   
   fc_log(
     message = "launch new job modal shiny::observeEvent: input$in_body_overview_button_update_job",
-    script = "server_header.R"
+    script = "server_body_overview.R"
   )
   
   # static copy
@@ -52,6 +52,7 @@ shiny::observeEvent(input$in_body_overview_button_update_job, {
 
 # ----------------------------------------------------------------------------------------- render ui ----
 
+# table of jobs
 output$out_body_overview_table_jobs <- DT::renderDataTable({
   
   req(rv$dt_jobs)
@@ -77,7 +78,16 @@ output$out_body_overview_table_jobs <- DT::renderDataTable({
           list(extend = "copy", filename = "Active Jobs")
         )
       )
-    )
+    ) %>%
+      # highlight overrun rows
+      formatStyle(
+        columns = "days_overrun",
+        target = "row",
+        backgroundColor = DT::styleInterval(
+          c(0),
+          c("#FFFFFF", "#FFD6DE")
+        )
+      )
   )
   
 })
@@ -105,6 +115,18 @@ output$out_body_overview_plot_gantt_job <- shiny::renderPlot({
   # capture required_by
   required_by <- dt_jobs$required_by
   
+  # x axis breaks and labels
+  x_axis_breaks <- seq(
+    as.Date(min(output$value)),
+    as.Date(max(required_by, output$value)),
+    by = "days"
+  )
+  x_axis_labels <- seq(
+    as.Date(min(output$value)),
+    as.Date(max(required_by, output$value)),
+    by = "days"
+  ) %>% as.Date() %>% format(format = "%b %d") %>% as.character()
+  
   return(
     ggplot2::ggplot(
       output,
@@ -129,6 +151,10 @@ output$out_body_overview_plot_gantt_job <- shiny::renderPlot({
         y = 3.5,
         angle = 90, 
         vjust = 1
+      ) + 
+      ggplot2::scale_x_date(
+        breaks = x_axis_breaks,
+        labels = x_axis_labels
       )
   )
   
@@ -152,33 +178,7 @@ fc_body_overview_display <- function(
 fc_body_overview_gantt_data <- function(
   dt_jobs
 ) {
-  
-  # capture start date
-  start_date <- Sys.Date()
-  
-  # order is
-  # mill
-  # program
-  # cnc
-  # veneer
-  # bench
-  # spray
-  # dispatch
-  
-  # calculate other start and end dates
-  start_date_mill <- start_date
-  end_date_mill <- start_date_mill + fc_body_overview_working_days(dt_jobs$hours_mill)
-  start_date_program <- end_date_mill
-  end_date_program <- start_date_program + fc_body_overview_working_days(dt_jobs$hours_program)
-  start_date_cnc <- end_date_program
-  end_date_cnc <- start_date_cnc + fc_body_overview_working_days(dt_jobs$hours_cnc)
-  start_date_veneer <- end_date_cnc
-  end_date_veneer <- start_date_veneer + fc_body_overview_working_days(dt_jobs$hours_veneer)
-  start_date_bench <- end_date_veneer
-  end_date_bench <- start_date_bench + fc_body_overview_working_days(dt_jobs$hours_bench)
-  start_date_spray <- end_date_bench
-  end_date_spray <- start_date_spray + fc_body_overview_working_days(dt_jobs$hours_spray)
-  
+
   # 
   items <- c(
     "Mill",
@@ -186,27 +186,30 @@ fc_body_overview_gantt_data <- function(
     "CNC",
     "Veneer",
     "Bench",
-    "Spray"
+    "Spray",
+    "Dispatch"
   )
   
   # create table
   output <- data.table::data.table(
     name = factor(items, levels = items),
     start_date = as.Date(c(
-      start_date_mill,
-      start_date_program,
-      start_date_cnc,
-      start_date_veneer,
-      start_date_bench,
-      start_date_spray
+      dt_jobs$start_date_mill,
+      dt_jobs$start_date_program,
+      dt_jobs$start_date_cnc,
+      dt_jobs$start_date_veneer,
+      dt_jobs$start_date_bench,
+      dt_jobs$start_date_spray,
+      dt_jobs$start_date_dispatch
     )),
     end_date = as.Date(c(
-      end_date_mill,
-      end_date_program,
-      end_date_cnc,
-      end_date_veneer,
-      end_date_bench,
-      end_date_spray
+      dt_jobs$end_date_mill,
+      dt_jobs$end_date_program,
+      dt_jobs$end_date_cnc,
+      dt_jobs$end_date_veneer,
+      dt_jobs$end_date_bench,
+      dt_jobs$end_date_spray,
+      dt_jobs$end_date_dispatch
     ))
   )
   
@@ -220,16 +223,5 @@ fc_body_overview_gantt_data <- function(
   
 }
 
-# calculate work days given hours
-fc_body_overview_working_days <- function(
-  hours,
-  hours_in_day = 7
-) {
-  
-  # calculate number of working days
-  days <- ceiling(hours / hours_in_day)
-  
-  return(days)
-  
-}
+
 
