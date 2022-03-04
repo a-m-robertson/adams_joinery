@@ -50,6 +50,9 @@ shiny::observeEvent(input$in_header_button_update_database, {
         dt_jobs = rv$dt_jobs
       )
       
+      # update rv
+      rv$dt_jobs = fc_database_from()
+      
       # notify user
       shinyWidgets::sendSweetAlert(
         session = session,
