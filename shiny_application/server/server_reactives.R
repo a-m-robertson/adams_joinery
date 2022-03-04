@@ -12,5 +12,7 @@
 # ----------------------------------------------------------------------------------------- reactives ----
 
 rv <- shiny::reactiveValues(
-  dt_jobs = fc_database_from()
+  dt_jobs = fc_database_from(),
+  non_work_dates = fc_database_dates_from(),
+  dt_users = fc_database_users_from()
 )

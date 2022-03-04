@@ -89,7 +89,7 @@ for (r_file in r_files) {
   source(
     file = r_file,
     local = TRUE,
-    encoding = var_global_encoding_type
+    encoding = "UTF-8"
   )
   
 } 

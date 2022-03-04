@@ -26,7 +26,7 @@ shiny::shinyServer(
     source(
       file = "server/server_reactives.R",
       local = TRUE,
-      encoding = var_global_encoding_type
+      encoding = "UTF-8"
     )
     
     # capture user
@@ -41,7 +41,7 @@ shiny::shinyServer(
     source(
       file = "server/server_header.R",
       local = TRUE,
-      encoding = var_global_encoding_type
+      encoding = "UTF-8"
     )
     
     fc_log(
@@ -51,7 +51,7 @@ shiny::shinyServer(
     source(
       file = "server/server_new_job.R",
       local = TRUE,
-      encoding = var_global_encoding_type
+      encoding = "UTF-8"
     )
     
     fc_log(
@@ -61,7 +61,7 @@ shiny::shinyServer(
     source(
       file = "server/server_body_overview.R",
       local = TRUE,
-      encoding = var_global_encoding_type
+      encoding = "UTF-8"
     )
     
     fc_log(
@@ -71,7 +71,17 @@ shiny::shinyServer(
     source(
       file = "server/server_body_mill.R",
       local = TRUE,
-      encoding = var_global_encoding_type
+      encoding = "UTF-8"
+    )
+    
+    fc_log(
+      message = "sourcing file: server/server_body_admin.R",
+      script = "server.R"
+    )
+    source(
+      file = "server/server_body_admin.R",
+      local = TRUE,
+      encoding = "UTF-8"
     )
 
     # when server is finished running we close the loading screen

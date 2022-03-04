@@ -12,7 +12,7 @@
 
 # path is location of workbook database
 fc_database_from <- function(
-  path = "global/database.xlsx"
+  path = "global/database/jobs.xlsx"
 ) {
   
   # load from workbook
@@ -30,8 +30,24 @@ fc_database_from <- function(
       dt_job <- fc_json_from(input[i, job_data])
       
       # date columns
-      date_columns <- c("required_by")
+      date_columns <- intersect(
+        colnames(dt_job),
+        c(
+          "required_by",
+          "start_date"
+        )
+      )
       dt_job[, (date_columns):= lapply(.SD, as.Date), .SDcols = date_columns]
+      
+      # date time columns
+      date_time_columns <- intersect(
+        colnames(dt_job),
+        c(
+          "created_on",
+          "updated_on"
+        )
+      )
+      dt_job[, (date_time_columns):= lapply(.SD, lubridate::as_datetime), .SDcols = date_time_columns]
       
       # create / add to output
       if (!is.null(output)) {
@@ -72,7 +88,7 @@ fc_database_from <- function(
 # path is location of workbook database
 fc_database_to <- function(
   dt_jobs,
-  path = "global/database.xlsx"
+  path = "global/database/jobs.xlsx"
 ) {
   
   # default output
@@ -104,20 +120,86 @@ fc_database_to <- function(
     
   }
   
+  # overwrite existing workbook
+  fc_database_write_to(
+    input = output,
+    path = path,
+    sheet = "jobs"
+  )
+  
+}
+
+
+# ----------------------------------------------------------------------------------------- create non_work_dates from database ----
+
+# path is location of workbook database
+fc_database_dates_from <- function(
+  path = "global/database/dates.xlsx"
+) {
+  
+  # load from workbook
+  input <- readxl::read_xlsx(path) %>% data.table::setDT()
+  
+  # create output
+  output <- fc_json_from(input$dates)
+  
+  # as date
+  output <- as.Date(output)
+  
+  return(output)
+  
+}
+
+# ----------------------------------------------------------------------------------------- create dt_users from database ----
+
+# path is location of workbook database
+fc_database_users_from <- function(
+  path = "global/database/users.xlsx"
+) {
+  
+  # load from workbook
+  input <- readxl::read_xlsx(path) %>% data.table::setDT()
+  
+  # create output
+  output <- fc_json_from(input$users)
+  
+  # as data.table
+  data.table::setDT(output)
+  
+  # data types
+  output[, id := as.numeric(id)]
+  output[, name := as.character(name)]
+  output[, role := as.character(role)]
+  output[, team := as.character(team)]
+  output[, access := as.character(access)]
+  
+  return(output)
+  
+}
+
+# ----------------------------------------------------------------------------------------- helper functions ----
+
+# write to database
+fc_database_write_to <- function(
+  input,
+  path,
+  sheet
+) {
+  
   # create workbook
   wb <- openxlsx::createWorkbook()
   
-  # add database sheet
+  # add sheet
   openxlsx::addWorksheet(
     wb = wb, 
-    sheetName = "database"
+    sheetName = sheet
   )
   
   # write data to workbook
   openxlsx::writeData(
     wb = wb,
-    sheet = "database",
-    x = output,
+    sheet = sheet,
+    x = input,
     startRow = 1,
     startCol = 1,
     colNames = TRUE,
@@ -132,4 +214,3 @@ fc_database_to <- function(
   )
   
 }
-
