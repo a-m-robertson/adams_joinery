@@ -53,13 +53,15 @@ fc_new_job_modal <- function(
   in_new_job_text_site <- ""
   in_new_job_text_cs_number <- ""
   in_new_job_text_dwg_number <- ""
+  in_new_job_date_start_date <- Sys.Date()
   in_new_job_date_required_by <- Sys.Date() + 28
   in_new_job_numeric_hours_mill <- 0
-  in_new_job_numeric_hours_programming <- 0
+  in_new_job_numeric_hours_program <- 0
   in_new_job_numeric_hours_cnc <- 0
   in_new_job_numeric_hours_veneer <- 0
   in_new_job_numeric_hours_bench <- 0
   in_new_job_numeric_hours_spray <- 0
+  in_new_job_numeric_hours_dispatch <- 0
   
   # capture inputs
   if (!is.null(dt_jobs)) {
@@ -68,13 +70,15 @@ fc_new_job_modal <- function(
     in_new_job_text_site <- dt_jobs$site
     in_new_job_text_cs_number <- dt_jobs$cs_number
     in_new_job_text_dwg_number <- dt_jobs$dwg_number
+    in_new_job_date_start_date <- dt_jobs$start_date
     in_new_job_date_required_by <- dt_jobs$required_by
     in_new_job_numeric_hours_mill <- dt_jobs$hours_mill
-    in_new_job_numeric_hours_programming <- dt_jobs$hours_programming
+    in_new_job_numeric_hours_program <- dt_jobs$hours_program
     in_new_job_numeric_hours_cnc <- dt_jobs$hours_cnc
     in_new_job_numeric_hours_veneer <- dt_jobs$hours_veneer
     in_new_job_numeric_hours_bench <- dt_jobs$hours_bench
     in_new_job_numeric_hours_spray <- dt_jobs$hours_spray
+    in_new_job_numeric_hours_dispatch <- dt_jobs$hours_dispatch
     
   }
   
@@ -174,6 +178,17 @@ fc_new_job_modal <- function(
           width = 6,
           
           shiny::dateInput(
+            inputId = "in_new_job_date_start_date",
+            label = h5("Start Date"),
+            value = in_new_job_date_start_date
+          )
+          
+        ),
+        
+        shiny::column(
+          width = 6,
+          
+          shiny::dateInput(
             inputId = "in_new_job_date_required_by",
             label = h5("Required By"),
             value = in_new_job_date_required_by
@@ -191,7 +206,7 @@ fc_new_job_modal <- function(
       shiny::fluidRow(
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_mill",
@@ -202,18 +217,18 @@ fc_new_job_modal <- function(
         ),
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
-            inputId = "in_new_job_numeric_hours_programming",
-            label = h5("Programming Hours"),
-            value = in_new_job_numeric_hours_programming
+            inputId = "in_new_job_numeric_hours_program",
+            label = h5("program Hours"),
+            value = in_new_job_numeric_hours_program
           )
           
         ),
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_cnc",
@@ -228,7 +243,7 @@ fc_new_job_modal <- function(
       shiny::fluidRow(
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_veneer",
@@ -239,7 +254,7 @@ fc_new_job_modal <- function(
         ),
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_bench",
@@ -250,12 +265,23 @@ fc_new_job_modal <- function(
         ),
         
         shiny::column(
-          width = 4,
+          width = 3,
           
           shiny::numericInput(
             inputId = "in_new_job_numeric_hours_spray",
             label = h5("Spray Hours"),
             value = in_new_job_numeric_hours_spray
+          )
+          
+        ),
+        
+        shiny::column(
+          width = 3,
+          
+          shiny::numericInput(
+            inputId = "in_new_job_numeric_hours_dispatch",
+            label = h5("Dispatch Hours"),
+            value = in_new_job_numeric_hours_dispatch
           )
           
         )
@@ -328,19 +354,21 @@ shiny::observeEvent(input$in_new_job_button_continue, {
     site = as.character(input$in_new_job_text_site),
     cs_number = as.character(input$in_new_job_text_cs_number),
     dwg_number = as.character(input$in_new_job_text_dwg_number),
+    start_date = as.Date(input$in_new_job_date_start_date),
     required_by = as.Date(input$in_new_job_date_required_by),
     hours_mill = as.numeric(input$in_new_job_numeric_hours_mill),
-    hours_programming = as.numeric(input$in_new_job_numeric_hours_programming),
+    hours_program = as.numeric(input$in_new_job_numeric_hours_program),
     hours_cnc = as.numeric(input$in_new_job_numeric_hours_cnc),
     hours_veneer = as.numeric(input$in_new_job_numeric_hours_veneer),
     hours_bench = as.numeric(input$in_new_job_numeric_hours_bench),
     hours_spray = as.numeric(input$in_new_job_numeric_hours_spray),
+    hours_dispatch = as.numeric(input$in_new_job_numeric_hours_dispatch),
     
     active = 1,
     created_by = as.character(rv$user),
-    created_on = Sys.time(),
+    created_on = lubridate::as_datetime(Sys.time()),
     updated_by = as.character(rv$user),
-    updated_on = Sys.time()
+    updated_on = lubridate::as_datetime(Sys.time())
   )
   
   # deactivate old row
@@ -355,6 +383,12 @@ shiny::observeEvent(input$in_new_job_button_continue, {
   
   # update rv
   rv$dt_jobs <- data.table::copy(dt_jobs)
+  
+  # recalculate
+  rv$dt_jobs <- fc_algorithm(
+    dt_jobs = rv$dt_jobs,
+    non_work_dates = rv$non_work_dates
+  )
   
   # clear reactive
   rv_new_job <- NULL
@@ -372,18 +406,19 @@ shiny::observeEvent(input$in_new_job_button_continue, {
 output$out_new_job_hours_total <- shiny::renderUI({
   
   req(rv_new_job$modal_active)
-  
+
   return(
     HTML(paste0(
       "<h5>",
       "Total Hours: ",
       sum(
         input$in_new_job_numeric_hours_mill,
-        input$in_new_job_numeric_hours_programming,
+        input$in_new_job_numeric_hours_program,
         input$in_new_job_numeric_hours_cnc,
         input$in_new_job_numeric_hours_veneer,
         input$in_new_job_numeric_hours_bench,
         input$in_new_job_numeric_hours_spray,
+        input$in_new_job_numeric_hours_dispatch,
         na.rm = TRUE
       ),
       "</h5>"

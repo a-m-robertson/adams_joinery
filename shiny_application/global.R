@@ -10,11 +10,6 @@
 #* snake case is preferred
 #* lists are alphabetical
 #* 
-# ----------------------------------------------------------------------------------------- global variables ----
-
-# encoding type
-var_global_encoding_type <- "UTF-8"
-
 # ----------------------------------------------------------------------------------------- source global scripts ----
 
 print(
@@ -22,7 +17,7 @@ print(
 )
 source(
   file = "global/log_functions.R",
-  encoding = var_global_encoding_type
+  encoding = "UTF-8"
 )
 
 fc_log(
@@ -31,7 +26,7 @@ fc_log(
 )
 source(
   file = "global/packages.R",
-  encoding = var_global_encoding_type
+  encoding = "UTF-8"
 )
 
 fc_log(
@@ -40,7 +35,7 @@ fc_log(
 )
 source(
   file = "global/javascript.R",
-  encoding = var_global_encoding_type
+  encoding = "UTF-8"
 )
 
 fc_log(
@@ -49,7 +44,7 @@ fc_log(
 )
 source(
   file = "global/json.R",
-  encoding = var_global_encoding_type
+  encoding = "UTF-8"
 )
 
 fc_log(
@@ -58,7 +53,16 @@ fc_log(
 )
 source(
   file = "global/database_functions.R",
-  encoding = var_global_encoding_type
+  encoding = "UTF-8"
+)
+
+fc_log(
+  message = "sourcing file: global/algorithm.R",
+  script = "global.R"
+)
+source(
+  file = "global/algorithm.R",
+  encoding = "UTF-8"
 )
 
 # ----------------------------------------------------------------------------------------- global settings ----
