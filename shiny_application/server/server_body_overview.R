@@ -39,7 +39,7 @@ shiny::observeEvent(input$in_body_overview_button_update_job, {
   dt_jobs <- data.table::copy(rv$dt_jobs)
   
   # reduce to required rows only display
-  dt_jobs <- fc_body_overview_display(dt_jobs)
+  dt_jobs <- fc_body_overview_jobs_display(dt_jobs)
   
   fc_new_job_modal_launch(
     dt_jobs = dt_jobs[input$out_body_overview_table_jobs_rows_selected, ]
@@ -60,8 +60,11 @@ output$out_body_overview_table_jobs <- DT::renderDataTable({
   # static copy
   dt_jobs <- data.table::copy(rv$dt_jobs)
   
-  # reduce to required rows only display
-  dt_jobs <- fc_body_overview_display(dt_jobs)
+  # reduce to required rows only display and format columns
+  dt_jobs <- fc_body_overview_jobs_display(
+    dt_jobs = dt_jobs,
+    format = TRUE
+  )
   
   # return table
   return(
@@ -102,7 +105,7 @@ output$out_body_overview_plot_gantt_job <- shiny::renderPlot({
   dt_jobs <- data.table::copy(rv$dt_jobs)
   
   # reduce to required rows only display
-  dt_jobs <- fc_body_overview_display(dt_jobs)
+  dt_jobs <- fc_body_overview_jobs_display(dt_jobs)
   
   # reduce to selected row
   dt_jobs <- dt_jobs[input$out_body_overview_table_jobs_rows_selected, ]
@@ -112,20 +115,20 @@ output$out_body_overview_plot_gantt_job <- shiny::renderPlot({
     dt_jobs = dt_jobs
   )
   
-  # capture required_by
-  required_by <- dt_jobs$required_by
+  # capture required_by as date
+  required_by <- lubridate::as_date(dt_jobs$required_by)
   
   # x axis breaks and labels
   x_axis_breaks <- seq(
-    as.Date(min(output$value)),
-    as.Date(max(required_by, output$value)),
+    lubridate::as_date(min(output$value)),
+    lubridate::as_date(max(required_by, output$value)),
     by = "days"
   )
   x_axis_labels <- seq(
-    as.Date(min(output$value)),
-    as.Date(max(required_by, output$value)),
+    lubridate::as_date(min(output$value)),
+    lubridate::as_date(max(required_by, output$value)),
     by = "days"
-  ) %>% as.Date() %>% format(format = "%b %d") %>% as.character()
+  ) %>% lubridate::as_date() %>% format(format = "%b %d") %>% as.character()
   
   return(
     ggplot2::ggplot(
@@ -163,12 +166,42 @@ output$out_body_overview_plot_gantt_job <- shiny::renderPlot({
 # ----------------------------------------------------------------------------------------- helper functions ----
 
 # create data.table for display
-fc_body_overview_display <- function(
-  dt_jobs
+fc_body_overview_jobs_display <- function(
+  dt_jobs,
+  format = FALSE
 ) {
   
   # active rows only
   output <- dt_jobs[active == 1]
+  
+  if (format) {
+    
+    # format date columns
+    date_columns <- c(
+      "start_date",
+      "required_by",
+      "start_date_mill",
+      "end_date_mill",
+      "start_date_program",
+      "end_date_program",
+      "start_date_cnc",
+      "end_date_cnc",
+      "start_date_veneer",
+      "end_date_veneer",
+      "start_date_bench",
+      "end_date_bench",
+      "start_date_spray",
+      "end_date_spray",
+      "start_date_dispatch",
+      "end_date_dispatch",
+      "start_date_recommended"
+    )
+    output[, (date_columns)] <- lapply(
+      output[, (date_columns), with = FALSE],
+      lubridate::as_date
+    ) %>% data.table::as.data.table()
+    
+  }
   
   return(output)
   
@@ -178,7 +211,7 @@ fc_body_overview_display <- function(
 fc_body_overview_gantt_data <- function(
   dt_jobs
 ) {
-
+  
   # 
   items <- c(
     "Mill",
@@ -193,7 +226,7 @@ fc_body_overview_gantt_data <- function(
   # create table
   output <- data.table::data.table(
     name = factor(items, levels = items),
-    start_date = as.Date(c(
+    start_date = lubridate::as_date(c(
       dt_jobs$start_date_mill,
       dt_jobs$start_date_program,
       dt_jobs$start_date_cnc,
@@ -202,7 +235,7 @@ fc_body_overview_gantt_data <- function(
       dt_jobs$start_date_spray,
       dt_jobs$start_date_dispatch
     )),
-    end_date = as.Date(c(
+    end_date = lubridate::as_date(c(
       dt_jobs$end_date_mill,
       dt_jobs$end_date_program,
       dt_jobs$end_date_cnc,

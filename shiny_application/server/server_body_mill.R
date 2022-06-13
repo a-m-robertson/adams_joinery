@@ -20,12 +20,18 @@ output$out_body_mill_table_jobs <- DT::renderDataTable({
   req(rv$dt_jobs)
   
   # static copy
-  output <- data.table::copy(rv$dt_jobs)
+  dt_jobs <- data.table::copy(rv$dt_jobs)
+  
+  # reduce to required rows only display
+  dt_jobs <- fc_body_overview_jobs_display(
+    dt_jobs = dt_jobs,
+    format = TRUE
+  )
   
   # return table
   return(
     DT::datatable(
-      data = output,
+      data = dt_jobs,
       rownames = FALSE,
       selection = "single",
       extensions = "Buttons",
