@@ -78,7 +78,6 @@ fc_algorithm_end_dates <- function(
   # spray
   # dispatch
   
-  
   # mill
   
   # if start_date_mill is not populate it then default to start_date
@@ -97,8 +96,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_mill[i] <- dt_jobs[i, end_date_mill] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_mill]),
-        to = as.Date(dt_jobs[i, end_date_mill]),
+        from = lubridate::as_date(dt_jobs[i, start_date_mill]),
+        to = lubridate::as_date(dt_jobs[i, end_date_mill]),
         by = "days"
       )
     ))
@@ -127,8 +126,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_program[i] <- dt_jobs[i, end_date_program] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_program]),
-        to = as.Date(dt_jobs[i, end_date_program]),
+        from = lubridate::as_date(dt_jobs[i, start_date_program]),
+        to = lubridate::as_date(dt_jobs[i, end_date_program]),
         by = "days"
       )
     ))
@@ -157,8 +156,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_cnc[i] <- dt_jobs[i, end_date_cnc] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_cnc]),
-        to = as.Date(dt_jobs[i, end_date_cnc]),
+        from = lubridate::as_date(dt_jobs[i, start_date_cnc]),
+        to = lubridate::as_date(dt_jobs[i, end_date_cnc]),
         by = "days"
       )
     ))
@@ -187,8 +186,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_veneer[i] <- dt_jobs[i, end_date_veneer] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_veneer]),
-        to = as.Date(dt_jobs[i, end_date_veneer]),
+        from = lubridate::as_date(dt_jobs[i, start_date_veneer]),
+        to = lubridate::as_date(dt_jobs[i, end_date_veneer]),
         by = "days"
       )
     ))
@@ -217,8 +216,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_bench[i] <- dt_jobs[i, end_date_bench] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_bench]),
-        to = as.Date(dt_jobs[i, end_date_bench]),
+        from = lubridate::as_date(dt_jobs[i, start_date_bench]),
+        to = lubridate::as_date(dt_jobs[i, end_date_bench]),
         by = "days"
       )
     ))
@@ -247,8 +246,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_spray[i] <- dt_jobs[i, end_date_spray] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_spray]),
-        to = as.Date(dt_jobs[i, end_date_spray]),
+        from = lubridate::as_date(dt_jobs[i, start_date_spray]),
+        to = lubridate::as_date(dt_jobs[i, end_date_spray]),
         by = "days"
       )
     ))
@@ -277,8 +276,8 @@ fc_algorithm_end_dates <- function(
     dt_jobs$end_date_dispatch[i] <- dt_jobs[i, end_date_dispatch] + length(intersect(
       non_work_dates,
       seq(
-        from = as.Date(dt_jobs[i, start_date_dispatch]),
-        to = as.Date(dt_jobs[i, end_date_dispatch]),
+        from = lubridate::as_date(dt_jobs[i, start_date_dispatch]),
+        to = lubridate::as_date(dt_jobs[i, end_date_dispatch]),
         by = "days"
       )
     ))
@@ -299,8 +298,13 @@ fc_algorithm_recommended_start_date <- function(
   dt_jobs
 ) {
   
+  fc_log(
+    message = "fc_algorithm_recommended_start_date",
+    script = "algorithm.R"
+  )
+  
   # calculate days overrun
-  dt_jobs[, days_overrun := pmax(end_date_dispatch - required_by, 0)]
+  dt_jobs[, days_overrun := as.numeric(pmax(end_date_dispatch - required_by, 0))]
   
   # calculate recommended start date
   dt_jobs[, start_date_recommended := start_date - days_overrun]

@@ -45,8 +45,8 @@ fc_new_job_modal <- function(
   # if provided dt_jobs will be a single row
   
   # modal title
-  if (is.null(dt_jobs)) {model_title <- "Create New Job"}
-  if (!is.null(dt_jobs)) {model_title <- paste0("Update Job ", dt_jobs$job_id)}
+  if (is.null(dt_jobs)) {modal_title <- "Create New Job"}
+  if (!is.null(dt_jobs)) {modal_title <- paste0("Update Job ", dt_jobs$job_id)}
   
   # default values
   in_new_job_text_customer <- ""
@@ -70,8 +70,8 @@ fc_new_job_modal <- function(
     in_new_job_text_site <- dt_jobs$site
     in_new_job_text_cs_number <- dt_jobs$cs_number
     in_new_job_text_dwg_number <- dt_jobs$dwg_number
-    in_new_job_date_start_date <- dt_jobs$start_date
-    in_new_job_date_required_by <- dt_jobs$required_by
+    in_new_job_date_start_date <- lubridate::as_date(dt_jobs$start_date)
+    in_new_job_date_required_by <- lubridate::as_date(dt_jobs$required_by)
     in_new_job_numeric_hours_mill <- dt_jobs$hours_mill
     in_new_job_numeric_hours_program <- dt_jobs$hours_program
     in_new_job_numeric_hours_cnc <- dt_jobs$hours_cnc
@@ -98,7 +98,7 @@ fc_new_job_modal <- function(
         shiny::column(
           width = 6,
           
-          h4(model_title)
+          h4(modal_title)
           
         ),
         
@@ -354,8 +354,8 @@ shiny::observeEvent(input$in_new_job_button_continue, {
     site = as.character(input$in_new_job_text_site),
     cs_number = as.character(input$in_new_job_text_cs_number),
     dwg_number = as.character(input$in_new_job_text_dwg_number),
-    start_date = as.Date(input$in_new_job_date_start_date),
-    required_by = as.Date(input$in_new_job_date_required_by),
+    start_date = as.numeric(input$in_new_job_date_start_date),
+    required_by = as.numeric(input$in_new_job_date_required_by),
     hours_mill = as.numeric(input$in_new_job_numeric_hours_mill),
     hours_program = as.numeric(input$in_new_job_numeric_hours_program),
     hours_cnc = as.numeric(input$in_new_job_numeric_hours_cnc),
