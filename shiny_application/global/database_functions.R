@@ -11,7 +11,7 @@
 # ----------------------------------------------------------------------------------------- create dt_jobs from database ----
 
 # path is location of workbook database
-fc_database_from <- function(
+fc_database_jobs_from <- function(
   path = "global/database/jobs.xlsx"
 ) {
   
@@ -28,17 +28,7 @@ fc_database_from <- function(
       
       # get job data
       dt_job <- fc_json_from(input[i, job_data])
-      
-      # date columns
-      date_columns <- intersect(
-        colnames(dt_job),
-        c(
-          "required_by",
-          "start_date"
-        )
-      )
-      dt_job[, (date_columns):= lapply(.SD, as.Date), .SDcols = date_columns]
-      
+
       # date time columns
       date_time_columns <- intersect(
         colnames(dt_job),
@@ -86,7 +76,7 @@ fc_database_from <- function(
 # ----------------------------------------------------------------------------------------- send dt_jobs to database ----
 
 # path is location of workbook database
-fc_database_to <- function(
+fc_database_jobs_to <- function(
   dt_jobs,
   path = "global/database/jobs.xlsx"
 ) {
@@ -128,7 +118,6 @@ fc_database_to <- function(
   )
   
 }
-
 
 # ----------------------------------------------------------------------------------------- create non_work_dates from database ----
 
@@ -206,11 +195,39 @@ fc_database_write_to <- function(
     rowNames = FALSE
   )
   
-  # overwrite existing workbook
-  openxlsx::saveWorkbook(
-    wb = wb, 
-    file = path,
-    overwrite = TRUE
+  tryCatch(
+    {
+      
+      # create temp copy of old database
+      temp_path <- gsub(
+        x = path,
+        pattern = ".xl",
+        replacement = "-temp.xl"
+      )
+      file.copy(
+        from = path,
+        to = temp_path
+      )
+      
+      # create new workbook
+      openxlsx::saveWorkbook(
+        wb = wb, 
+        file = path,
+        overwrite = TRUE
+      )
+      
+      # delete old
+      file.remove(temp_path)
+      
+    },
+    error = function(message) {
+      
+      fc_log(
+        message = paste0("error: ", message),
+        script = "database_functions.R"
+      )
+      
+    }
   )
   
 }
