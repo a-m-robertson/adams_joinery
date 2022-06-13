@@ -46,12 +46,12 @@ shiny::observeEvent(input$in_header_button_update_database, {
     {
       
       # update database
-      fc_database_to(
+      fc_database_jobs_to(
         dt_jobs = rv$dt_jobs
       )
       
       # update rv
-      rv$dt_jobs = fc_database_from()
+      rv$dt_jobs = fc_database_jobs_from()
       
       # notify user
       shinyWidgets::sendSweetAlert(
