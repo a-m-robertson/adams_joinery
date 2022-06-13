@@ -139,11 +139,69 @@ ui_body_admin <- shiny::fluidPage(
       
     ),
     
-    # dates
+    # non work dates
     shinyBS::bsCollapsePanel(
       
-      title = "Dates",
-      style = "primary"
+      title = "Non-Work Dates",
+      style = "primary",
+      
+      shiny::uiOutput(
+        outputId = "out_body_admin_message_dates"
+      ),
+      
+      br(),
+      
+      DT::dataTableOutput(
+        outputId = "out_body_admin_table_dates"
+      ),
+      
+      br(),
+      
+      shiny::fluidRow(
+        
+        shiny::column(
+          
+          width = 3,
+          
+          shinyBS::bsButton(
+            inputId = "in_body_admin_button_delete_date",
+            label = "Remove Date",
+            style = "primary"
+          )
+          
+        )
+        
+      ),
+      
+      hr(),
+      
+      shiny::fluidRow(
+        
+        shiny::column(
+          
+          width = 3,
+          
+          shiny::dateInput(
+            inputId = "in_body_admin_button_date",
+            label = h5("Select Date")
+          )
+          
+        ),
+        
+        shiny::column(
+          
+          width = 3,
+          style = "margin-top: 40px;",
+          
+          shinyBS::bsButton(
+            inputId = "in_body_admin_button_add_date",
+            label = "Add Date",
+            style = "primary"
+          )
+          
+        )
+        
+      )
       
     )
     
