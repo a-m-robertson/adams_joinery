@@ -143,7 +143,7 @@ shiny::tagList(
     id = "div_ui_global_busy_screen",
     class = "busy",
     shiny::img(
-      src = "gifs/loading.gif"
+      src = "gifs/saw.gif"
     )
   ),
   # in app loading screen div_ui_global_loading_screen
@@ -151,7 +151,7 @@ shiny::tagList(
     id = "div_ui_global_loading_screen",
     class = "loading",
     shiny::img(
-      src = "gifs/loading.gif"
+      src = "gifs/saw.gif"
     )
   ) %>% shinyjs::hidden(),
   # initial loading screen div_ui_global_init_loading_screen
@@ -162,7 +162,7 @@ shiny::tagList(
     h5('We are preparing your environment, please wait'),
     br(),
     shiny::img(
-      src = "gifs/loading.gif"
+      src = "gifs/saw.gif"
     )
   ),
   # in app access denied screen div_ui_global_access_denied
