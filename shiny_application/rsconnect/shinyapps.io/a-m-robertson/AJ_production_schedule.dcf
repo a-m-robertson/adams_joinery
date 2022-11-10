@@ -1,0 +1,14 @@
+name: AJ_production_schedule
+title: AJ_production_schedule
+username:
+account: a-m-robertson
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7585226
+bundleId: 6498155
+url: https://a-m-robertson.shinyapps.io/AJ_production_schedule/
+when: 1668081201.80557
+lastSyncTime: 1668081201.80558
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: www/icons/icon_update_database.png
