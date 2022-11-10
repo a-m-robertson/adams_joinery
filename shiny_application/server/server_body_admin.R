@@ -117,7 +117,7 @@ shiny::observeEvent(input$in_body_admin_button_add_date, {
     script = "server_body_admin.R"
   )
   
-  # remove date from rv
+  # add date to rv
   rv$non_work_dates <- union(
     x = rv$non_work_dates,
     y = input$in_body_admin_button_date

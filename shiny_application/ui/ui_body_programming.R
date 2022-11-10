@@ -1,9 +1,9 @@
-#* script name      ui_body_programming.R
-#* script goal      manage the user interface (ui) of the body programming section
+#* script name      ui_body_program.R
+#* script goal      manage the user interface (ui) of the body program section
 #* 
 #* naming convention
-#* div elements     div_body_programming
-#* functions        fc_body_programming
+#* div elements     div_body_program
+#* functions        fc_body_program
 #*
 #* other conventions
 #* snake case is preferred
@@ -11,13 +11,13 @@
 #* 
 # ----------------------------------------------------------------------------------------- ui body ----
 
-ui_body_programming <- shiny::fluidPage(
+ui_body_program <- shiny::fluidPage(
   
   br(),
   
   shinyBS::bsCollapse(
     
-    id = "panel_body_programming",
+    id = "panel_body_program",
     multiple = TRUE,
     open = c("Quick Start", "Jobs"),
     
@@ -28,7 +28,7 @@ ui_body_programming <- shiny::fluidPage(
       style = "primary",
       
       shiny::uiOutput(
-        outputId = "out_body_programming_ui_quickstart"
+        outputId = "out_body_program_ui_quickstart"
       )
       
     ),
@@ -40,7 +40,7 @@ ui_body_programming <- shiny::fluidPage(
       style = "primary",
       
       DT::dataTableOutput(
-        outputId = "out_body_programming_table_jobs"
+        outputId = "out_body_program_table_jobs"
       )
       
     )
