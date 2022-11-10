@@ -10,13 +10,16 @@
 #* 
 # ----------------------------------------------------------------------------------------- create dt_jobs from database ----
 
-# path is location of workbook database
+# ss is URL or ID of google sheet
 fc_database_jobs_from <- function(
-  path = "global/database/jobs.xlsx"
+  ss = "global/database/jobs.xlsx"
 ) {
   
   # load from workbook
-  input <- readxl::read_xlsx(path) %>% data.table::setDT()
+  input <- googlesheets4::read_sheet(
+    ss = ss,
+    sheet = "jobs"
+  ) %>% data.table::setDT()
   
   # default output
   output <- NULL
@@ -75,10 +78,10 @@ fc_database_jobs_from <- function(
 
 # ----------------------------------------------------------------------------------------- send dt_jobs to database ----
 
-# path is location of workbook database
+# ss is URL or ID of google sheet
 fc_database_jobs_to <- function(
   dt_jobs,
-  path = "global/database/jobs.xlsx"
+  ss = "global/database/jobs.xlsx"
 ) {
   
   # default output
@@ -113,7 +116,7 @@ fc_database_jobs_to <- function(
   # overwrite existing workbook
   fc_database_write_to(
     input = output,
-    path = path,
+    ss = ss,
     sheet = "jobs"
   )
   
@@ -121,13 +124,16 @@ fc_database_jobs_to <- function(
 
 # ----------------------------------------------------------------------------------------- create non_work_dates from database ----
 
-# path is location of workbook database
+# ss is URL or ID of google sheet
 fc_database_dates_from <- function(
-  path = "global/database/dates.xlsx"
+  ss = "global/database/dates.xlsx"
 ) {
   
   # load from workbook
-  input <- readxl::read_xlsx(path) %>% data.table::setDT()
+  input <- googlesheets4::read_sheet(
+    ss = ss,
+    sheet = "dates"
+  ) %>% data.table::setDT()
   
   # create output
   output <- fc_json_from(input$dates)
@@ -141,13 +147,16 @@ fc_database_dates_from <- function(
 
 # ----------------------------------------------------------------------------------------- create dt_users from database ----
 
-# path is location of workbook database
+# ss is URL or ID of google sheet
 fc_database_users_from <- function(
   path = "global/database/users.xlsx"
 ) {
   
   # load from workbook
-  input <- readxl::read_xlsx(path) %>% data.table::setDT()
+  input <- googlesheets4::read_sheet(
+    ss = ss,
+    sheet = "users"
+  ) %>% data.table::setDT()
   
   # create output
   output <- fc_json_from(input$users)
@@ -175,49 +184,15 @@ fc_database_write_to <- function(
   sheet
 ) {
   
-  # create workbook
-  wb <- openxlsx::createWorkbook()
-  
-  # add sheet
-  openxlsx::addWorksheet(
-    wb = wb, 
-    sheetName = sheet
-  )
-  
-  # write data to workbook
-  openxlsx::writeData(
-    wb = wb,
-    sheet = sheet,
-    x = input,
-    startRow = 1,
-    startCol = 1,
-    colNames = TRUE,
-    rowNames = FALSE
-  )
-  
   tryCatch(
     {
       
-      # create temp copy of old database
-      temp_path <- gsub(
-        x = path,
-        pattern = ".xl",
-        replacement = "-temp.xl"
+      # overwrite google sheet
+      googlesheets4::sheet_write(
+        data = input,
+        ss = ss,
+        sheet = sheet
       )
-      file.copy(
-        from = path,
-        to = temp_path
-      )
-      
-      # create new workbook
-      openxlsx::saveWorkbook(
-        wb = wb, 
-        file = path,
-        overwrite = TRUE
-      )
-      
-      # delete old
-      file.remove(temp_path)
       
     },
     error = function(message) {
